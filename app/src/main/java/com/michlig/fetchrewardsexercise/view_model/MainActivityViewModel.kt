@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.michlig.fetchrewardsexercise.model.ListEntry
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -52,7 +53,13 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
             bufferedReader?.close()
         }
         if(text.isNotBlank()){
-            parseJsonData(JSONArray(text))
+            try{
+                parseJsonData(JSONArray(text))
+            }catch(e: JSONException){
+                Log.e(TAG, e.toString())
+                setError(true)
+            }
+
         }else{
             setError(true)
         }
@@ -85,9 +92,14 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
             entry = json.get(i) as JSONObject
             val listID = entry.getInt("listId")
             val id = entry.getInt("id")
-            val name: String? = entry.optString("name")
 
-            if (name != null && name != "null" && name.isNotBlank()) {
+            val name: String? = if(entry.isNull("name")){
+                null
+            }else {
+                entry.optString("name")
+            }
+
+            if (name != null && name.isNotBlank()) {
                 list[listID - 1].add(ListEntry(id, listID, name))
             }
         }
