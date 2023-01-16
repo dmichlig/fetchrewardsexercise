@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.fetchrewardsexercise.R
 import com.example.fetchrewardsexercise.databinding.ActivityMainBinding
 import com.michlig.fetchrewardsexercise.view_model.MainActivityViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,23 @@ class MainActivity : AppCompatActivity() {
             binding.listRecycler.apply{
                 adapter = ListRecyclerViewAdapter(it)
                 layoutManager = LinearLayoutManager(context)
-                addItemDecoration(DividerItemDecoration(context,LinearLayoutManager.HORIZONTAL))
+                addItemDecoration(DividerItemDecoration(context,LinearLayoutManager.VERTICAL))
+            }
+        }
+
+        //observer that displays error message if data is not retrieved
+        mainActivityViewModel.error.observe(this){
+            if(it) {
+                val errorDialog = AlertDialog.Builder(this)
+                errorDialog.setTitle(getString(R.string.error))
+                    .setMessage(getString(R.string.error_message))
+                    .setCancelable(false)
+                    .setPositiveButton("OK") { _, _ ->
+                        mainActivityViewModel.setError(false)
+                        checkForInternetConnection()
+
+                    }
+                    .show()
             }
         }
     }
@@ -46,8 +63,8 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             val noInternetDialog = AlertDialog.Builder(this)
-            noInternetDialog.setTitle("No Internet Available")
-                .setMessage("You must be connected to the internet to retrieve data")
+            noInternetDialog.setTitle(getString(R.string.no_internet_available))
+                .setMessage(getString(R.string.internet_connection_needed))
                 .setCancelable(false)
                 .setPositiveButton("OK") { _, _ ->
                     checkForInternetConnection()
@@ -55,30 +72,4 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
     }
-
-
-//    private fun parseJsonData(){
-//
-//        Log.e("debugging", jsonData!!.length().toString())
-//        val size = jsonData!!.length()
-//        var entry: JSONObject?
-//
-//        for(i in 0 until size){
-//            entry = jsonData!!.get(i) as JSONObject
-//            val listID = entry.getInt("listId")
-//            val id = entry.getInt("id")
-//            val name: String? = entry.optString("name")
-//            if(name != null && name != "null" && name.isNotBlank()){
-//                if(!entryList.containsKey(listID)){
-//                    entryList[listID] = ListIdEntry(listID, mutableListOf(ListEntry(id, listID, name)))
-//                }else{
-//                    entryList[listID]!!.listEntries.add(ListEntry(id, listID, name))
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun getDataFromWeb()
-
-
 }

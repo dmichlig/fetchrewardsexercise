@@ -14,17 +14,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="List ID:"
+            android:text="@string/list_id"
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="@color/black"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="5dp"/>
         <TextView
             android:id="@+id/list_number"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="number"
+            android:text="@string/number"
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="@color/black"/>
@@ -34,7 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/add_48px"/>
+            android:src="@drawable/add_48px"
+            android:contentDescription="@string/minimize_toggle_button" />
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/id_recycler"

@@ -31,7 +31,7 @@ class ListRecyclerViewAdapter(private val entries: List<List<ListEntry>>): Recyc
         holder.idRecycler.apply {
             adapter = IdRecyclerViewAdapter(idList)
             layoutManager = LinearLayoutManager(holder.itemView.context)
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL))
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
         holder.listNumber.text = idNumber.toString()
 

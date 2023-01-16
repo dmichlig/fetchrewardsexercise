@@ -13,29 +13,49 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.stream.Collectors
 
 class MainActivityViewModel(application: Application): AndroidViewModel(application) {
 
     val dataList: LiveData<List<List<ListEntry>>> get() = _dataList
-    var _dataList = MutableLiveData<List<List<ListEntry>>>()
+    private var _dataList = MutableLiveData<List<List<ListEntry>>>()
+
+    val error: LiveData<Boolean> get() = _error
+    private var _error = MutableLiveData<Boolean>()
+
+    fun setError(boolean: Boolean){
+        _error.postValue(boolean)
+    }
 
     //function to retrieve JSON data from web endpoint
     fun retrieveJsonFromWeb(){
+        var text = ""
+        var connection: HttpURLConnection? = null
+        var bufferedReader: BufferedReader? = null
+        try {
+            //open connection to web url
+            val jsonURL = URL(JSON_URL)
+            connection = jsonURL.openConnection() as HttpURLConnection
+            connection.connect()
 
-        //open connection to web url
-        val jsonURL = URL(JSON_URL)
-        val connection = jsonURL.openConnection()
-        connection.connect()
-
-        //read in data from url
-        val stream = connection.getInputStream()
-        val bufferedReader = BufferedReader(InputStreamReader(stream))
-        val text = bufferedReader.lines().collect(Collectors.joining(""))
-
-        //pass data as JSONArray to be parsed
-        parseJsonData(JSONArray(text))
+            //read in data from url
+            val stream = connection.inputStream
+            bufferedReader = BufferedReader(InputStreamReader(stream))
+            text = bufferedReader.lines().collect(Collectors.joining(""))
+        }catch(e: Exception){
+            Log.e(TAG, e.toString())
+            setError(true)
+        }finally{
+            connection?.disconnect()
+            bufferedReader?.close()
+        }
+        if(text.isNotBlank()){
+            parseJsonData(JSONArray(text))
+        }else{
+            setError(true)
+        }
     }
 
     //function to parse JSON data into a list of list of ListEntries to be displayed by
@@ -90,6 +110,7 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
     }
 
     companion object{
+        const val TAG = "MainActivityViewModel"
         const val JSON_URL = "https://fetch-hiring.s3.amazonaws.com/hiring.json"
     }
 }
